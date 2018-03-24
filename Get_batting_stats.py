@@ -60,7 +60,7 @@ def scrape(START_YEAR,YEARS):
                                                                     -1,-2,-3]],
                                                                     axis=1)
             
-                batters_list = batter_lists.append(batter_list)
+                batters_list = batters_list.append(batter_list)
                 
                 count+=1
                 
