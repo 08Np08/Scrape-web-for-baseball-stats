@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Mar 19 00:49:15 2018
-
 @author: Nik
 """
 
@@ -18,27 +17,15 @@ COLUMNS = ["Rk","Gcar","Opp","AB","R","H","2B","3B",
 
 def main():
  
-    batters_list = scrape(START_YEAR,YEARS)
-    
-    drop_rows_by_equals(batters_list,"AB","R")
-    
-    drop_rows_by_greater(batters_list,"AB",10)
-
-    batters_list.to_pickle("batters_list")
-    
-def get_batters():
-    batters = pd.DataFrame(pd.read_csv("Batters.csv",sep=" "))
-    batters = list(batters.astype(str).values.flatten())
-    return(batters)
-    
-def scrape(START_YEAR,YEARS):
     count = 0
     batters_list = pd.DataFrame(columns = COLUMNS)
-    batters = get_batters()
-
+    batters = get_batters("batters.csv")
+    
     for i in range(len(batters)):
         for j in range(YEARS):
             try:
+                count+=1
+                
                 batter = batters[i]
                 
                 batter_url = ("https://www.baseball-reference.com/players/gl.fcgi?id="
@@ -62,17 +49,28 @@ def scrape(START_YEAR,YEARS):
             
                 batters_list = batters_list.append(batter_list)
                 
-                count+=1
-                
                 print("percent finished",round(count/
                       (YEARS*len(batters))*100,2),"%")
         
             except:
                 print("error")
                 continue
-        
-    return(batters_list)
-     
+    
+    drop_rows_by_equals(batters_list,"AB","R")
+    
+    drop_rows_by_equals(batters_list,"Gcar","Gtm")
+    
+    drop_rows_by_greater(batters_list,"AB",10)
+    
+    batters_list = batters_list.dropna(how="any", inplace = False)
+    print(batters_list.shape)
+    batters_list.to_pickle("batters_list")
+    
+def get_batters(csv):
+    batters = pd.DataFrame(pd.read_csv(csv,sep=" "))
+    batters = list(batters.astype(str).values.flatten())
+    return(batters)
+    
 def drop_rows_by_equals(df,column,drop_criteria): 
     for i in range(len(df)):
         try:
@@ -90,4 +88,3 @@ def drop_rows_by_greater(df,column,drop_criteria):
             continue
 
 main()
-
