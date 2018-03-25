@@ -20,9 +20,8 @@ def main():
     count = 0
     batters_list = pd.DataFrame(columns = COLUMNS)
     batters = get_batters("batters.csv")
-    length = len(batters)
     
-    for i in range(length//5):
+    for i in range(len(batters):
         for j in range(YEARS):
             try:
                 count+=1
