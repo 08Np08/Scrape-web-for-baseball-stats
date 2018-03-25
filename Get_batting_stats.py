@@ -20,8 +20,9 @@ def main():
     count = 0
     batters_list = pd.DataFrame(columns = COLUMNS)
     batters = get_batters("batters.csv")
+    length = len(batters)
     
-    for i in range(len(batters)):
+    for i in range(length//5):
         for j in range(YEARS):
             try:
                 count+=1
@@ -51,10 +52,12 @@ def main():
                 
                 print("percent finished",round(count/
                       (YEARS*len(batters))*100,2),"%")
-        
+                print(batters_list.shape)
             except:
                 print("error")
                 continue
+    
+    batters_list.index = pd.RangeIndex(len(batters_list.index))
     
     drop_rows_by_equals(batters_list,"AB","R")
     
@@ -75,7 +78,7 @@ def drop_rows_by_equals(df,column,drop_criteria):
     for i in range(len(df)):
         try:
             if df.iloc[i][column] == drop_criteria:
-                df.drop(df.index[i], inplace=True)     
+                df.drop(df.index[i], inplace=True)      
         except:
             continue
         
