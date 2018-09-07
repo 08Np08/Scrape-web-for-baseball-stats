@@ -1,9 +1,9 @@
 import pandas as pd
 import pickle
 
-END_YEAR= int(input("Enter the end year:")
+END_YEAR= int(input("Enter the end year:"))
 
-START_YEAR = int("Enter the start year:")
+START_YEAR = int(input("Enter the start year:"))
               
 YEARS = START_YEAR - END_YEAR
 
