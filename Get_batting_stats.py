@@ -1,20 +1,25 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import pandas as pd
+import pickle
 
-YEARS = 3
+END_YEAR= int(input("Enter the end year:")
 
-START_YEAR = 2017
+YEARS = START_YEAR - END_YEAR
 
-COLUMNS = ["Rk","Gcar","Opp","AB","R","H","2B","3B",
+START_YEAR = int("Enter the start year:")
+
+file = open("batting stats.pickle","wb")
+
+def main():
+    
+    COLUMNS = ["Rk","Gcar","Opp","AB","R","H","2B","3B",
            "HR","RBI","BB","IBB",'SO',"HBP","SB","CS",
            "OBP","SLG","OPS","BOP","aLI","WPA","RE24"]
 
-def main():
-    names = []
+    batter_DF = pd.DataFrame(columns = COLUMNS)
+
     count = 0
     
-    batters_list = pd.DataFrame(columns = COLUMNS)
+    batters_dict = {}
     batters = get_batters("batters.csv")
 
     
@@ -26,50 +31,30 @@ def main():
                 batter = batters[i]
                 
                 batter_url = ("https://www.baseball-reference.com/players/gl.fcgi?id="
-                              +batter+"&t=b&year="+str(START_YEAR-j))
+                              +batter+"&t=b&year="+str(START_YEAR + j))
             
                 batter_list = pd.DataFrame(pd.read_html(batter_url)[4])
-                
-                batter_list = batter_list[["Rk","Gcar","Gtm","Date","Tm",
-                                           "Opp","Rslt","Inngs","PA",
-                                           "AB","R","H","2B","3B","HR",
-                                           "RBI","BB","IBB",'SO',"HBP",
-                                           "SH","SF","ROE","GDP","SB",
-                                           "CS","OBP","SLG","OPS","BOP",
-                                           "aLI","WPA","RE24","DFS(DK)",
-                                           "DFS(FD)",'Pos']]
-            
-                batter_list = batter_list.drop(batter_list.columns[[2,3,4,6,7,8,
-                                                                    20,21,22,23,
-                                                                    -1,-2,-3]],
-                                                                    axis=1)
-            
-                for i in range(len(batter_list)):
-                    names.append(batter)
-                    
-                batters_list = batters_list.append(batter_list)
-                
-                batters_list.index = pd.RangeIndex(len(batters_list.index))
+
+                drop_rows_by_equals(batter_list,"AB","R")
     
-                drop_rows_by_equals(batters_list,"AB","R")
+                drop_rows_by_equals(batter_list,"Gcar","Gtm")
     
-                drop_rows_by_equals(batters_list,"Gcar","Gtm")
-    
-                drop_rows_by_greater(batters_list,"AB",10)
+                drop_rows_by_greater(batter_list,"AB",10)
                 
-                batters_list = batters_list.dropna(how="any", inplace = False)
+                batter_DF = batter_DF.append(batter_list)
                 
                 print("Percent Finished:",round(count/
                       (YEARS*len(batters))*100,2),"%")
-
-            except:
-                print("error")
+                
+            except Exception as e:
+                print(e)
                 continue
-    
-    names = pd.Series(names)
-    batters_list["Name"] = names
-    
-    batters_list.to_pickle("batters_list")
+
+                
+        batters_dict[batter] = batter_DF
+        batter_DF = pd.DataFrame(columns = COLUMNS)
+
+    pickle.dump(batters_dict,file) 
     
 def get_batters(csv):
     batters = pd.DataFrame(pd.read_csv(csv,sep=" "))
@@ -90,6 +75,5 @@ def drop_rows_by_greater(df,column,drop_criteria):
             if int(df.iloc[i][column]) > drop_criteria:
                 df.drop(df.index[i], inplace=True)     
         except:
-            continue
-        
+            continue  
 main()
