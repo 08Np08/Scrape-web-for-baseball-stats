@@ -3,9 +3,9 @@ import pickle
 
 END_YEAR= int(input("Enter the end year:")
 
-YEARS = START_YEAR - END_YEAR
-
 START_YEAR = int("Enter the start year:")
+              
+YEARS = START_YEAR - END_YEAR
 
 file = open("batting stats.pickle","wb")
 
